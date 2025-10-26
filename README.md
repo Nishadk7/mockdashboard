@@ -1,6 +1,4 @@
-# Fashion Dashboard - Business Intelligence
-
-A comprehensive business intelligence dashboard designed to transform fashion knowledge data into actionable insights for businesses, particularly emerging brands.
+# HUED Fashion Dashboard - Business Intelligence
 
 ## 🚀 Features
 
@@ -103,53 +101,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 DATA_SOURCE_PATH=./enhanced_fashion_data.csv
 ```
 
-### Customization
-- **Colors**: Modify `tailwind.config.js` for brand colors
-- **Charts**: Update chart configurations in `app/page.tsx`
-- **Data**: Replace `enhanced_fashion_data.csv` with your data
-
 ## 📈 Usage Guide
-
-### For Business Users
-
-1. **Dashboard Overview**
-   - View key metrics at the top of the dashboard
-   - Monitor total content, average time spent, upvotes, and views
-
-2. **Content Analysis**
-   - Use search to find specific topics or sources
-   - Filter by category or platform for focused insights
-   - Review top-performing content in the tables
-
-3. **Trend Identification**
-   - Analyze category performance charts
-   - Monitor engagement trends over time
-   - Identify emerging topics with high trending scores
-
-### For Developers
-
-1. **Data Integration**
-   - Replace CSV data source with your database
-   - Implement real-time data updates
-   - Add authentication and user management
-
-2. **Custom Metrics**
-   - Add new calculated fields to the data structure
-   - Implement custom visualization components
-   - Extend the API with additional endpoints
-
-## 🔒 Security Considerations
-
-### MVP Phase (Current)
-- Public access without authentication
-- Data sanitization to prevent sensitive information exposure
-- Rate limiting for API protection
-
-### Future Enhancements
-- JWT-based authentication
-- Role-based access control (RBAC)
-- Data encryption and secure transmission
-- Audit logging for compliance
 
 ## 📊 Data Flow
 
@@ -159,60 +111,10 @@ DATA_SOURCE_PATH=./enhanced_fashion_data.csv
 [Business Users] ← [Web Dashboard] ← [API Layer] ← [Data Storage]
 ```
 
-## 🚀 Deployment
-
-### Vercel (Recommended)
-1. Connect your GitHub repository to Vercel
-2. Configure environment variables
-3. Deploy automatically on push to main branch
-
-### Other Platforms
-- **Netlify**: Static site deployment
-- **Railway**: Full-stack application hosting
-- **AWS/GCP**: Enterprise-scale deployment
-
-## 🔮 Future Roadmap
-
-### Phase 1 (Current)
-- ✅ Basic dashboard with CSV data
-- ✅ Core visualizations and filtering
-- ✅ Responsive design
-
-### Phase 2 (Planned)
-- 🔄 Real-time data streaming
-- 🔄 User authentication and roles
-- 🔄 Advanced analytics and ML insights
-- 🔄 Custom report generation
-
-### Phase 3 (Future)
-- 📱 Mobile application
-- 🤖 Predictive analytics
-- 🔗 E-commerce platform integration
-- 🌐 Multi-tenant architecture
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the GitHub repository
-- Contact the development team
-- Review the architecture documentation
 
 ## 📚 Additional Resources
 
 - [Architecture Documentation](./ARCHITECTURE.md)
-- [Data Flow Diagrams](./architecture_diagram.md)
-- [API Documentation](./docs/api.md) (Coming Soon)
-- [Deployment Guide](./docs/deployment.md) (Coming Soon)
+- [Data Flow Diagrams](./docs/DATA_FLOW.md)
+- [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
 
