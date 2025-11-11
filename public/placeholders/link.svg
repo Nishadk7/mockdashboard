@@ -1,0 +1,8 @@
+<svg width="640" height="360" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#111827" rx="20"/>
+  <path d="M240 230c-33 0-60-27-60-60s27-60 60-60h64v32h-64c-16 0-28 12-28 28s12 28 28 28h64v32h-64z" fill="#38bdf8"/>
+  <path d="M400 110c33 0 60 27 60 60s-27 60-60 60h-64v-32h64c16 0 28-12 28-28s-12-28-28-28h-64v-32h64z" fill="#a855f7"/>
+  <text x="320" y="320" font-size="42" font-family="Inter, Arial, sans-serif" fill="#f9fafb" text-anchor="middle">
+    Link Preview
+  </text>
+</svg>

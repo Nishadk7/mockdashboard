@@ -1,0 +1,8 @@
+<svg width="640" height="360" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#111827" rx="20"/>
+  <path d="M320 110c0 44 35 80 78 82v56c-30-1-58-11-78-30v64c0 42-34 76-76 76s-76-34-76-76 34-76 76-76c7 0 14 1 20 3v58c-6-3-12-5-20-5-20 0-36 16-36 36s16 36 36 36 36-16 36-36V110h64z" fill="#0ff" opacity="0.7"/>
+  <path d="M384 84c0 41 33 74 74 74v56c-30 0-58-11-78-30v126c0 42-34 76-76 76s-76-34-76-76 34-76 76-76c7 0 14 1 20 3v58c-6-3-12-5-20-5-20 0-36 16-36 36s16 36 36 36 36-16 36-36V84h44z" fill="#ff0050" opacity="0.8"/>
+  <text x="320" y="320" font-size="42" font-family="Inter, Arial, sans-serif" fill="#f9fafb" text-anchor="middle">
+    TikTok Video
+  </text>
+</svg>

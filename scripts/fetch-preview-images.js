@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 /**
  * Generates preview images for entries in enhanced_fashion_data.csv.
- * 1. Attempts to read Open Graph / Twitter preview images.
- * 2. Falls back to a hosted screenshot service (Microlink) when metadata is missing.
- * 3. Writes results to enhanced_fashion_data_with_previews.csv, adding a Preview_Image_URL column.
+ * Priority order:
+ * 1. Provider oEmbed thumbnails (Instagram, TikTok).
+ * 2. Open Graph / Twitter metadata scrape.
+ * 3. Hosted screenshot fallback (Microlink).
  *
- * Optional env:
- *   MICROLINK_API_KEY=your_key_here
+ * Outputs enhanced_fashion_data_with_previews.csv with Preview_Image_URL set.
+ *
+ * Optional env vars:
+ *   IG_OEMBED_TOKEN=<APP_ID>|<CLIENT_TOKEN>   # Meta Instagram oEmbed token
+ *   MICROLINK_API_KEY=<your_microLink_key>    # Increases screenshot quota
  */
 
 const fs = require('fs');
@@ -18,6 +22,10 @@ const PREVIEW_HEADER = 'Preview_Image_URL';
 const PUBLIC_PREVIEW_DIR = path.join(process.cwd(), 'public', 'previews');
 const METADATA_CONCURRENCY = 6;
 const REQUEST_TIMEOUT = 15000;
+const IG_OEMBED_TOKEN = process.env.IG_OEMBED_TOKEN || '662661356926335|c8567039a17d93d4df05ba4bd5308e6d';   
+
+const INSTAGRAM_OEMBED_TOKEN = process.env.IG_OEMBED_TOKEN || '';
+
 
 function requireFile(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -130,6 +138,66 @@ async function downloadToFile(url, filename) {
   fs.writeFileSync(filename, Buffer.from(arrayBuffer));
 }
 
+function isInstagramUrl(url) {
+  try {
+    return new URL(url).hostname.includes('instagram.com');
+  } catch (_) {
+    return false;
+  }
+}
+
+function isTikTokUrl(url) {
+  try {
+    return new URL(url).hostname.includes('tiktok.com');
+  } catch (_) {
+    return false;
+  }
+}
+
+async function fetchInstagramOEmbedPreview(url) {
+  if (!INSTAGRAM_OEMBED_TOKEN) {
+    return null;
+  }
+  try {
+    const endpoint = new URL('https://graph.facebook.com/v19.0/instagram_oembed');
+    endpoint.searchParams.set('url', url);
+    endpoint.searchParams.set('access_token', INSTAGRAM_OEMBED_TOKEN);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    const response = await fetch(endpoint, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!response.ok) {
+      console.warn(`⚠️  Instagram oEmbed error (${response.status}) for ${url}`);
+      return null;
+    }
+    const data = await response.json();
+    return data?.thumbnail_url || null;
+  } catch (error) {
+    console.warn(`⚠️  Instagram oEmbed failed for ${url}: ${error.message}`);
+    return null;
+  }
+}
+
+async function fetchTikTokOEmbedPreview(url) {
+  try {
+    const endpoint = new URL('https://www.tiktok.com/oembed');
+    endpoint.searchParams.set('url', url);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    const response = await fetch(endpoint, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!response.ok) {
+      console.warn(`⚠️  TikTok oEmbed error (${response.status}) for ${url}`);
+      return null;
+    }
+    const data = await response.json();
+    return data?.thumbnail_url || null;
+  } catch (error) {
+    console.warn(`⚠️  TikTok oEmbed failed for ${url}: ${error.message}`);
+    return null;
+  }
+}
+
 async function fetchScreenshotViaMicrolink(url, reference) {
   try {
     const params = new URLSearchParams({
@@ -188,19 +256,35 @@ async function main() {
     ? headers
     : [...headers, PREVIEW_HEADER];
 
-  console.log(`🔎 Fetching metadata previews for ${rows.length} rows …`);
+  console.log(`🔎 Resolving previews for ${rows.length} rows …`);
   const metadataResults = await withConcurrency(rows, METADATA_CONCURRENCY, async ({ row }, idx) => {
     if (row[PREVIEW_HEADER]) {
       console.log(`✅ Row ${idx + 1}: preview already present.`);
       return row;
     }
-    const metaPreview = await fetchPreviewFromMetadata(row.URL);
-    if (metaPreview) {
-      console.log(`🖼️  Row ${idx + 1}: metadata preview found.`);
-      row[PREVIEW_HEADER] = metaPreview;
+
+    const url = row.URL;
+    let previewUrl = null;
+
+    if (isInstagramUrl(url)) {
+      previewUrl = await fetchInstagramOEmbedPreview(url);
+      if (!previewUrl && !INSTAGRAM_OEMBED_TOKEN) {
+        console.warn('ℹ️  IG_OEMBED_TOKEN not set; skipping Instagram oEmbed lookup.');
+      }
+    } else if (isTikTokUrl(url)) {
+      previewUrl = await fetchTikTokOEmbedPreview(url);
+    }
+
+    if (!previewUrl) {
+      previewUrl = await fetchPreviewFromMetadata(url);
+    }
+
+    if (previewUrl) {
+      row[PREVIEW_HEADER] = previewUrl;
+      console.log(`🖼️  Row ${idx + 1}: preview resolved.`);
     } else {
       row[PREVIEW_HEADER] = '';
-      console.log(`❌ Row ${idx + 1}: metadata preview missing.`);
+      console.log(`❌ Row ${idx + 1}: no preview found yet.`);
     }
     return row;
   });
